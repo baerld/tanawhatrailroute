@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset=utf-8 />
+	<title>Map Template Browser Title</title>
+	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.css" />
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.1/dist/leaflet.css" />
+	<link href="https://fonts.googleapis.com/css?family=Noto+Sans" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Lora" rel="stylesheet">
+
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			background: "whitesmoke";
+			font-family: "Noto Sans", sans-serif;
+			color: #3d3d3d;
+		}
+
+		h1 {
+			position: absolute;
+			margin-top: 0;
+			top: 10px;
+			left: 45px;
+			font-size: 2em;
+			font-family: "Lora", serif;
+			letter-spacing: .04em;
+			padding: 10px 15px;
+			background: rgba(256, 256, 256);
+			border: 1px solid grey;
+			border-radius: 3px;
+			z-index: 800;
+		}
+
+		h2 {
+			font-family: "Lora", serif;
+			letter-spacing: .04em;
+		}
+
+		#map {
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			width: 100%;
+		}
+
+		section {
+			position: absolute;
+			bottom: 0;
+			left: 10px;
+			width: 280px;
+			margin: 20px auto;
+			padding: 0 15px;
+			background: rgba(256, 256, 256);
+			border: 1px solid grey;
+			border-radius: 3px;
+			z-index: 800;
+		}
+
+		p {
+			font-size: .9em;
+			line-height: 1.5em;
+		}
+
+		a {
+			color: #005daa;
+			text-decoration: none;
+		}
+
+		a:hover {
+			text-decoration: underline;
+		}
+	</style>
+</head>
+
+<body>
+
+	<h1>Price Park Picnic Area to Beacon Heights Overlook via Tanawha Trail.</h1>
+
+	<div id='map'></div>
+
+	<section>
+		<h2>The Tanawha Trail</h2>
+
+		<p>The Tanawha Trail, stretching 13.5 miles from Julian Price Park to Beacon Heights, parallels the Blue Ridge Parkway on Grandfather Mountain in North Carolina. Tanawha, the Cherokee word for fabulous hawk or eagle, is an appropriate name for this trail that offers hikers spectacular views of distant mountains.</p>
+
+		<p>Completed in 1993, the Tanawha Trail, like the final section of the parkway it mirrors, is unique in construction. The trail traverses a fragile and ancient ecosystem and leads hikers through a surprising range of biological and geological terrains. Some sections tunnel through thickets of laurel and rhododendron. Others dip down into remote hardwood coves and then ascend into evergreen glens. Boulder fields and cascading streams punctuate the landscape.
+		</p>
+
+		<p>For more information, visit the <a href=https://www.nps.gov/blri/planyourvisit/tanawha-trail.htm>National Park Service</a></p>
+		<p>Map authored by Lilly Baer</p>
+
+	</section>
+
+	<script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+	<script src="https://unpkg.com/leaflet@1.0.1/dist/leaflet.js"></script>
+
+	<script src="data/route.js"></script> 
+    
+    <script>
+    
+
+//options to be used when creating the map
+		var options = {
+			center: [36.08403, -81.83015],
+			zoom: 16
+		}
+
+		console.log(data)
+
+//creation of the Leaflet map
+		var map = L.map('map', options);
+
+//request to load basemap
+var CartoDB_Positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+	subdomains: 'abcd',
+	maxZoom: 20
+}).addTo(map);
+
+//string content to be inserted into a tooltip
+		//var message = 'Beacon Heights!';
+
+//create a Leaflet marker, centered on the map's center.
+		//L.marker(map.getCenter())
+			//.bindTooltip(message) //bind the tooltip and message to the marker
+			//.addTo(map) // add the marker to the map`
+			//.openTooltip(); // open the tooltip
+
+
+	var myRoute = L.geoJson(data, {
+ 		filter : function(feature) {
+ 			if(feature.geometry.type =="LineString") {
+ 				return feature;
+			 }
+			},
+ 		
+		style : function(feature) {
+			return {
+				color: "#005DAA",
+				weight: 6,
+				opacity: 5,
+				dashArray: "5, 5"
+			}
+			}
+ 		}).addTo(map);
+ 
+	var myStops = L.geoJson(data, {
+ 		filter : function(feature) {
+ 			if(feature.geometry.type == "Point") {
+				 return feature;
+ 			}
+ 			},
+
+			 onEachFeature : function(feature, layer) {
+			layer.bindTooltip(feature.properties['name']);
+		}
+		}).addTo(map);
+
+
+	map.fitBounds(myRoute.getBounds());
+		
+
+	</script>
+
+</body>
+
+</html>
